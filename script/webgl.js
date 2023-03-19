@@ -3,6 +3,9 @@ import { drawScene } from "./draw-scene.js";
 
 main();
 
+let squareRotation = 0.0;
+let deltaTime = 0;
+
 function main() {
   const canvas = document.getElementById("canvas-id");
   const gl = canvas.getContext("webgl");
@@ -57,7 +60,20 @@ function main() {
   const buffers = initBuffers(gl);
 
   // Draw the scene
-  drawScene(gl, programInfo, buffers);
+  let then = 0;
+
+  // Draw the scene repeatedly
+  function render(now) {
+    now *= 0.001; // convert to seconds
+    deltaTime = now - then;
+    then = now;
+
+    drawScene(gl, programInfo, buffers, squareRotation);
+    squareRotation += deltaTime;
+
+    requestAnimationFrame(render);
+  }
+  requestAnimationFrame(render);
 }
 
 function initShaderProgram(gl, vsSource, fsSource) {
